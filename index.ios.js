@@ -12,14 +12,23 @@ import {
   View
 } from 'react-native';
 
-class StopWatch extends Component {  
-  
+class StopWatch extends Component {
+
   render() {
     return (
       <View style={styles.container}>
-        <Text> 00:00:00</Text>
-        {this.startStopButton()}
-        {this.lapButton()}
+        <View style={styles.header}>
+          <View style={styles.timerWrapper}>
+            <Text> 00: 00: 00</Text>
+          </View>
+          <View style={styles.buttonWrapper}>
+            {this.startStopButton() }
+            {this.lapButton() }
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>I am a list of laps</Text>
+        </View>
       </View>
     );
   }
@@ -39,25 +48,46 @@ class StopWatch extends Component {
       </View>
     )
   }
+
+  border(color) {
+    return {
+      borderColor: color,
+      borderWidth: 4
+    }
+  }
+
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex:1,
+    alignItems:'stretch'
+  },
+  header: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    borderColor: 'yellow',
+    borderWidth: 4
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  footer: {
+    flex:1,
+    borderColor: 'blue',
+    borderWidth: 4
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  timerWrapper: {
+    flex: 5,
+    justifyContent:'center',
+    alignItems:'center',
+    borderColor: 'red',
+    borderWidth: 4
   },
+  buttonWrapper: {
+    flex:3,
+    flexDirection: 'row',
+    justifyContent:'space-around',
+    alignItems:'center',
+    borderColor: 'green',
+    borderWidth: 4
+  }
 });
 
 AppRegistry.registerComponent('StopWatch', () => StopWatch);

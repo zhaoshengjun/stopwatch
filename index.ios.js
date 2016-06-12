@@ -12,22 +12,35 @@ import {
   View,
   TouchableHighlight
 } from 'react-native';
+// import * as formatTime from 'minutes-seconds-milliseconds';
+var formatTime = require('minutes-seconds-milliseconds')
 
 class StopWatch extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      timeElapsed: null,
+      running: false
+    };
+  }
+
   render() {
+    console.log(this.state);
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.timerWrapper}>
-            <Text> 00: 00: 00</Text>
+        <View style={[styles.header,this.border('yellow')]}>
+          <View style={[styles.timerWrapper,this.border('red')]}>
+            <Text style={styles.timer}> 
+              { formatTime(this.state.timeElapsed) } 
+            </Text>
           </View>
-          <View style={styles.buttonWrapper}>
+          <View style={[styles.buttonWrapper,this.border('green')]}>
             {this.startStopButton() }
             {this.lapButton() }
           </View>
         </View>
-        <View style={styles.footer}>
+        <View style={[styles.footer,this.border('blue')]}>
           <Text>I am a list of laps</Text>
         </View>
       </View>
@@ -38,9 +51,12 @@ class StopWatch extends Component {
     return (
       <TouchableHighlight 
         underlayColor="gray"
-        onPress={this.handleStartPress}
+        onPress={this.handleStartPress.bind(this)}
+        style={[styles.button, styles.startButton]}
         >
-        <Text>Start</Text>
+        <Text>
+          {this.state.running ? 'Stop' : 'Start'}
+        </Text>
       </TouchableHighlight>
     )
   }
@@ -50,6 +66,7 @@ class StopWatch extends Component {
       <TouchableHighlight 
         underlayColor="green"
         onPress={this.handleLapPress}
+        style={[styles.button, styles.lapButton]}
         >
         <Text>Lap</Text>
       </TouchableHighlight>
@@ -57,7 +74,22 @@ class StopWatch extends Component {
   }
 
   handleStartPress() {
-    console.log("start pressed!");
+    
+    if (this.state.running) {
+      clearInterval(this.intervalId);
+      this.setState({
+        running: false
+      });
+      return
+    }
+
+    let startTime = new Date();
+    this.intervalId = setInterval(()=> {
+      this.setState({
+        timeElapsed: new Date() - startTime,
+        running: true
+      });
+    }, 30);
   }
 
   handleLapPress() {
@@ -65,10 +97,11 @@ class StopWatch extends Component {
   }
 
   border(color) {
-    return {
-      borderColor: color,
-      borderWidth: 4
-    }
+    
+    // return {
+    //   borderColor: color,
+    //   borderWidth: 4
+    // }
   }
 
 }
@@ -79,29 +112,38 @@ const styles = StyleSheet.create({
     alignItems:'stretch'
   },
   header: {
-    flex: 1,
-    borderColor: 'yellow',
-    borderWidth: 4
+    flex: 1
   },
   footer: {
-    flex:1,
-    borderColor: 'blue',
-    borderWidth: 4
+    flex:1
   },
   timerWrapper: {
     flex: 5,
     justifyContent:'center',
-    alignItems:'center',
-    borderColor: 'red',
-    borderWidth: 4
+    alignItems:'center'
   },
   buttonWrapper: {
     flex:3,
     flexDirection: 'row',
     justifyContent:'space-around',
-    alignItems:'center',
-    borderColor: 'green',
-    borderWidth: 4
+    alignItems:'center'
+  },
+  timer: {
+    fontSize: 60
+  },
+  button: {
+    borderWidth: 2,
+    height: 100,
+    width: 100,
+    borderRadius:50,
+    justifyContent:'center',
+    alignItems: 'center'
+  },
+  startButton: {
+    borderColor: 'green'
+  },
+  lapButton: {
+    borderColor: 'red'
   }
 });
 

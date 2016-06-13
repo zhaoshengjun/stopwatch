@@ -20,13 +20,15 @@ class StopWatch extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      startTime: null,
       timeElapsed: null,
-      running: false
+      running: false,
+      laps:[]
     };
   }
 
   render() {
-    console.log(this.state);
+    // console.log(this.state);
     return (
       <View style={styles.container}>
         <View style={[styles.header,this.border('yellow')]}>
@@ -41,18 +43,30 @@ class StopWatch extends Component {
           </View>
         </View>
         <View style={[styles.footer,this.border('blue')]}>
-          <Text>I am a list of laps</Text>
+          {this.laps()}
         </View>
       </View>
     );
   }
 
+  laps() {
+    return this.state.laps.map((lap, index)=>{
+      return (
+        <View key={index} style={styles.lap}>
+          <Text style={styles.lapText}>Lap #{index + 1} </Text>
+          <Text style={styles.lapText}>{formatTime(lap)}</Text>
+        </View>
+      )
+    })
+  }
+
   startStopButton() {
+    let style = this.state.running ? styles.stopButton : styles.startButton;
     return (
       <TouchableHighlight 
         underlayColor="gray"
         onPress={this.handleStartPress.bind(this)}
-        style={[styles.button, styles.startButton]}
+        style={[styles.button, style]}
         >
         <Text>
           {this.state.running ? 'Stop' : 'Start'}
@@ -65,7 +79,7 @@ class StopWatch extends Component {
     return (
       <TouchableHighlight 
         underlayColor="green"
-        onPress={this.handleLapPress}
+        onPress={this.handleLapPress.bind(this)}
         style={[styles.button, styles.lapButton]}
         >
         <Text>Lap</Text>
@@ -81,19 +95,29 @@ class StopWatch extends Component {
         running: false
       });
       return
-    }
+    };
 
-    let startTime = new Date();
+    this.setState({
+      startTime: new Date()
+    });
+
     this.intervalId = setInterval(()=> {
       this.setState({
-        timeElapsed: new Date() - startTime,
+        timeElapsed: new Date() - this.state.startTime,
         running: true
       });
     }, 30);
   }
 
   handleLapPress() {
-    console.log('lap pressed!')
+    let lap = this.state.timeElapsed;
+    
+    this.setState({
+      timeElapsed: null,
+      startTime: new Date(),
+      laps: [...this.state.laps, lap]
+    });
+    console.log(this.state);
   }
 
   border(color) {
@@ -140,10 +164,20 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   startButton: {
-    borderColor: 'green'
+    borderColor: '#00cc00'
+  },
+  stopButton:{
+    borderColor:'#cc0000'
   },
   lapButton: {
-    borderColor: 'red'
+    borderColor: 'black'
+  },
+  lap: {
+    justifyContent:'space-around',
+    flexDirection:'row'
+  },
+  lapText: {
+    fontSize: 30
   }
 });
 
